@@ -7,14 +7,13 @@ function LoadTransactions() {
 	ClearChart();
 	HideChart();
 	
-	var csvObjects = Papa.parse(csvContent).data;
-	for(var i = 0; i < csvObjects.length; i++)
+	for(var i = 0; i < transactions.length; i++)
 	{	
-		var chartLabel = csvObjects[i][0];
-		var description = csvObjects[i][1];
-		var moneySpent = parseFloat(csvObjects[i][2]);
-		var moneyMade = parseFloat(csvObjects[i][3]);
-		var accountBalance = parseFloat(csvObjects[i][4]);
+		var chartLabel = transactions[i].DateTime;
+		var description = transactions[i].Description;
+		var moneySpent = transactions[i].Spent;
+		var moneyMade = transactions[i].Made;
+		var accountBalance = transactions[i].AccountBalance;
 
 		var parentDiv = document.createElement("DIV");
 		parentDiv.className = "transactionDiv";
@@ -53,7 +52,7 @@ function LoadTransactions() {
 
 function CreateSelectDropDown(){
 	//Create array of options to be added
-	var array = ["Etc.", "Banking Fees","Mortgage","Bills","Groceries","Eating Out", "Games"];
+	var array = ["Unknown", "Etc.", "Banking Fees","Mortgage","Bills","Groceries","Eating Out", "Games"];
 
 	//Create and append select list
 	var selectList = document.createElement("select");

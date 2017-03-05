@@ -7,7 +7,9 @@
 		<script type="text/javascript" src="js/MyMoney.js"></script>
 		<script type="text/javascript" src="js/Ui.js"></script>
 		<script type="text/javascript" src="js/Chart.js"></script>
+		<script type="text/javascript" src="js/Transaction.js"></script>
 		<script type="text/javascript" src="js/Transactions.js"></script>
+		<script type="text/javascript" src="js/Storage.js"></script>
 		<script type="text/javascript" src="js/papaparse.mini.js"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/MyMoney.css" />
@@ -15,14 +17,14 @@
 		<link rel="stylesheet" type="text/css" href="css/component.css" />
 		<script src="js/modernizr.custom.js"></script>
 	</head>
-		<body id="body" onload="CheckFileAPISupport()">
+		<body id="body" onload="CheckFileAPISupport(); CheckForLocalStorage();">
 		<section class="color-1">
 			<p>
-				<button class="btn btn-1 btn-1a" onclick="OpenFileSelectionDialog();">Select File</button>
+				<button class="btn btn-1 btn-1a" data-toggle="modal" data-target="#LoadDataDialog">Load Data</button>
 				<button class="btn btn-1 btn-1a" onclick="BuildLineChart();">Line Chart</button>
 				<button class="btn btn-1 btn-1a" onclick="BuildPieChart();">Pie Chart</button>
 				<button class="btn btn-1 btn-1a" onclick="LoadTransactions();">Transactions</button>
-				<button class="btn btn-1 btn-1a" data-toggle="modal" data-target="#myModal">Save Data</button>
+				<button id="SaveDataButton" class="btn btn-1 btn-1a" data-toggle="modal" data-target="#SaveDataDialog">Save Data</button>
 				<input style="position:absolute; top:-100px;" type="file" id="fileSelectButton" onchange="LoadCvs(this)"/>
 			</p>
 		</section>
@@ -32,7 +34,27 @@
 		</div>
 		
 		<!-- Modal -->
-		<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal fade" id="LoadDataDialog" role="dialog">
+			<div class="modal-dialog" style="width:750px;">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+					  <button type="button" class="close" data-dismiss="modal">&times;</button>
+					  <h4 class="modal-title">Load Data</h4>
+					</div>
+					<div class="color-1">
+						<button class="btn btn-1 btn-1a" onclick="OpenFileSelectionDialog();">From File</button>
+						<button class="btn btn-1 btn-1a" data-toggle="modal" data-target="#SelectSavedTransactionsDialog" onclick="DisplayLocallySavedTransactions();">From Local Storage</button>
+					</div>
+					<div class="modal-footer">
+					  <button id="CloseLoadDataDialogButton" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Modal -->
+		<div class="modal fade" id="SaveDataDialog" role="dialog">
 			<div class="modal-dialog">
 				<!-- Modal content-->
 				<div class="modal-content">
@@ -40,11 +62,41 @@
 					  <button type="button" class="close" data-dismiss="modal">&times;</button>
 					  <h4 class="modal-title">Modal Header</h4>
 					</div>
-					<div class="modal-body">
-					  <p>Some text in the modal.</p>
+					<div class="color-1" style="padding-bottom:40px;">
+						<div>
+							<h3 style="color:white; padding-left:5px;">To Storage</h3>
+							<button class="btn btn-1 btn-1a" onclick="SaveToStorage();">Save</button>
+							<p style="padding-left:325px; margin-top:-95px; color:white;">Name</p>
+							<input style="margin-left:325px; type="text" id="StorageNameInput">
+						</div>
+						
+						<div style="padding-top:30px; padding-left:5px;">
+							<h3 style="color:white">To File</h3>
+							<button class="btn btn-1 btn-1a" onclick="SaveToStorage();">Save</button>
+							<p style="padding-left:325px; margin-top:-95px; color:white;">Name</p>
+							<input style="margin-left:325px; type="text" id="FileNameInput">
+						</div>
 					</div>
 					<div class="modal-footer">
 					  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Modal -->
+		<div class="modal fade" id="SelectSavedTransactionsDialog" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+					  <button type="button" class="close" data-dismiss="modal">&times;</button>
+					  <h4 class="modal-title">Modal Header</h4>
+					</div>
+					<div id="SelectedSavedTransactionsDialogBodyDiv" class="color-1" style="padding-bottom:40px;">
+					</div>
+					<div class="modal-footer">
+					  <button id="SelectedSavedTransactionsDialogCloseButton" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</div>
 			</div>

@@ -12,22 +12,12 @@ function HideChart(){
 }
 
 function BuildPieChart(){
-	var result = Papa.parse(csvContent);
 	var moneySpent = 0;
 	var moneyMade = 0;
 
-	for (var i = 0; i < result.data.length; i++) {
-		var spent = parseFloat(result.data[i][2]);
-		if (!isNaN(spent))
-		{		
-			moneySpent += spent;
-		}
-		
-		var made = parseFloat(result.data[i][3]);
-		if (!isNaN(made))
-		{
-			moneyMade += made;
-		}
+	for (var i = 0; i < transactions.length; i++) {
+		moneySpent += transactions[i].Spent;
+		moneyMade += transactions[i].Made;
 	}
 	
 	moneyMade = moneyMade.toFixed(2);
@@ -71,19 +61,18 @@ function BuildPieChart(){
 }
 
 function BuildLineChart() {
-	var result = Papa.parse(csvContent);
 	var chartLabels = [];
 	var moneySpent = [];
 	var moneyMade = [];
 	var accountBalance = [];
 	var descriptions = [];
 
-	for (var i = 0; i < result.data.length; i++) {
-		chartLabels[i] = result.data[i][0];
-		descriptions[i] = result.data[i][1];
-		moneySpent[i] = result.data[i][2];
-		moneyMade[i] = result.data[i][3];
-		accountBalance[i] = result.data[i][4];
+	for (var i = 0; i < transactions.length; i++) {
+		chartLabels[i] = transactions[i].DateTime;
+		descriptions[i] = transactions[i].Description;
+		moneySpent[i] = transactions[i].Spent;
+		moneyMade[i] = transactions[i].Made;
+		accountBalance[i] = transactions[i].AccountBalance;
 	}
 	
 	ClearTransactions();
