@@ -20,10 +20,42 @@ function BuildPieChart(){
 		moneyMade += transactions[i].Made;
 	}
 	
-	moneyMade = moneyMade.toFixed(2);
-	moneySpent = moneySpent.toFixed(2);
+	var labels = {};
+	var categoriesCount = 0;
+	for(var i = 0; i < transactions.length; i++){
+		if (labels[transactions[i].Category] == undefined){
+			if (transactions[i].Spent != 0){
+				labels[transactions[i].Category] = parseInt(transactions[i].Spent);
+			}
+			else{
+				labels[transactions[i].Category] = parseInt(transactions[i].Made);
+			}
+			
+			categoriesCount++;
+			
+			continue;
+		}
+		
+		if (transactions[i].Spent != 0){		
+			labels[transactions[i].Category] += parseInt(transactions[i].Spent);
+		}
+		else{
+			labels[transactions[i].Category] += parseInt(transactions[i].Made);
+		}
+	}
+	
+	var colours = [];
+	for (var i = 0; i < categoriesCount; i++){
+		colours.push(getRandomColor());
+	}
+	
+	var values = [];
+	for (var value in labels){
+		values.push(labels[value]);
+	}
 		
 	ClearTransactions();
+	ClearMonthlyOutcome();
 		
 	var ctx1 = document.getElementById("chart");
 	ctx1.setAttribute('hidden', 'false');
@@ -31,21 +63,12 @@ function BuildPieChart(){
 	ClearChart();
 	
 	var data = {
-    labels: [
-        "Made",
-        "Spent"
-    ],
+    labels: Object.keys(labels),
     datasets: [
         {
-            data: [moneyMade, moneySpent],
-            backgroundColor: [
-                "green",
-                "red"
-            ],
-            hoverBackgroundColor: [
-                "green",
-                "red"
-            ]
+            data: values,
+            backgroundColor: colours,
+            hoverBackgroundColor: colours,
         }]
 	};
 	
@@ -58,6 +81,15 @@ function BuildPieChart(){
 			maintainAspectRatio: false
 		}
 	});
+}
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 function BuildLineChart() {
@@ -76,6 +108,7 @@ function BuildLineChart() {
 	}
 	
 	ClearTransactions();
+	ClearMonthlyOutcome();
 		
 	var ctx = document.getElementById("chart");
 	ctx.setAttribute('hidden', 'false');
@@ -136,4 +169,36 @@ function BuildLineChart() {
 			}
 		}
 	});
+	
+	ClearMonthlyOutcome();
+	CalculateMonthlyOutcome();
+}
+
+function ClearMonthlyOutcome() {
+	var averagesDiv = document.getElementById("additionalDetailsDiv")
+	averagesDiv.innerHTML = "";
+}
+
+function CalculateMonthlyOutcome(){
+	var spent = 0;
+	var made = 0;
+	
+	for (var i = 0; i < transactions.length; i++) {
+		spent += transactions[i].Spent;
+		made += transactions[i].Made;
+	}
+	
+	var additionalDetails = document.getElementById("additionalDetailsDiv")
+
+	var madeElement = document.createElement("H3");
+	madeElement.innerHTML = "Made: $" + made.toFixed(2);
+	additionalDetails.appendChild(madeElement);
+	
+	var spentElement = document.createElement("H3");
+	spentElement.innerHTML = "Spent: $" + spent.toFixed(2);
+	additionalDetails.appendChild(spentElement);
+	
+	var endResult = document.createElement("H3");
+	endResult.innerHTML = "End Result: $" + (made - spent).toFixed(2);
+	additionalDetails.appendChild(endResult);
 }
